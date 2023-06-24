@@ -26,6 +26,16 @@
           "group": "generator-menu-group@1"
         }
       ]
+    },
+    "configuration": {
+      "title": "Vue3CodeGenerator",
+      "properties": {
+        "vue3codegenerator.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key from [OpenAI](https://platform.openai.com/account/api-keys)"
+        }
+      }
     }
   },
   "scripts": {
