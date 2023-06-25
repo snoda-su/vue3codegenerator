@@ -14,14 +14,14 @@
   "contributes": {
     "commands": [
       {
-        "command": "vue3codegenerator.helloWorld",
-        "title": "Hello World"
+        "command": "vue3codegenerator.replace",
+        "title": "Replace with the Composition API code."
       }
     ],
     "menus": {
       "editor/context": [
         {
-          "command": "vue3codegenerator.helloWorld",
+          "command": "vue3codegenerator.replace",
           "when": "editorTextFocus",
           "group": "generator-menu-group@1"
         }
