@@ -21,13 +21,20 @@ export function activate(context: vscode.ExtensionContext) {
 		const conf = vscode.workspace.getConfiguration("vue3codegenerator");
 		const apiKey = conf.get('apiKey') as string;
 		const openai = new OpenAIApi(new Configuration({ apiKey }));
+		const selection = vscode.window.activeTextEditor?.selection;
+		const selectedText = vscode.window.activeTextEditor?.document.getText(selection) || '';
 
-		let response = '';
+		if (selection === undefined || selectedText === '') {
+			vscode.window.showInformationMessage('Please select the text.');
+			return;	
+		}
+		const prompt = createPrompt(selectedText);
+		let response: string;
 
 		try {
 			const completion = await openai.createChatCompletion({
 				model: 'gpt-3.5-turbo',
-				messages: [{ role: "user", content: 'こんにちは' }]
+				messages: [{ role: "user", content: prompt }]
 			});
 			response = completion.data.choices[0].message?.content || '';
 		} catch (error: any) {
@@ -37,17 +44,26 @@ export function activate(context: vscode.ExtensionContext) {
 			} else {
 				e = error.message;
 			}
-			response += `[ERROR] ${e}`;
+			vscode.window.showInformationMessage(`[ERROR] ${e}`);
 		}
 
-		vscode.window.showInformationMessage(response);
-
 		vscode.window.activeTextEditor?.edit(async edit => {
-			edit.insert(new vscode.Position(2, 0), response);
+			edit.replace(selection, response);
 		});
 	});
 
 	context.subscriptions.push(disposable);
+}
+
+function createPrompt(selectedText: string) {
+	return `# 命令書:
+	以下のコードをcompositionAPIを使った書き方に変換してください
+	
+	# コード：
+	${selectedText}
+	
+	#出力：
+	`;
 }
 
 // This method is called when your extension is deactivated
